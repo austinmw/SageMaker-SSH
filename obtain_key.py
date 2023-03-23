@@ -138,7 +138,7 @@ if args.action == "get":
         )
         print(
             f"Step 2. Paste the following contents into the file "
-            f"ssh/authorized_keys:\n{public_key_str}\n"
+            f"'authorized_keys':\n{public_key_str}\n"
         )
         print(
             "Step 3. Open a terminal in the notebook and run the "
