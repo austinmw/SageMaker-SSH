@@ -1,3 +1,28 @@
+"""
+Retrieve or remove a parameter from SSM Parameter Store.
+
+This script retrieves a key pair parameter from AWS SSM
+Parameter Store, and sets up an SSH config to connect to a SageMaker
+Notebook instance through an EC2 bastion host.
+
+The script requires an "outputs.json" file with the following entries:
+
+- KeyStack.Region: the AWS region of the key pair
+- KeyStack.MyKeyPairName: the name of the key pair
+- KeyStack.MyKeyPairParameterName: the name of the key pair parameter in SSM
+- BastionStack.PublicIP: the public IP of the bastion host
+- SageMakerStack.SageMakerNotebookName: the name of the SageMaker Notebook
+- SageMakerStack.SageMakerNotebookURL: the URL of the SageMaker Notebook
+
+Usage: python script.py [action]
+
+Actions:
+
+- "get": retrieves the key pair parameter, writes the key to a file,
+sets permissions, adds hosts to the SSH config, and prints instructions.
+- "remove": removes the key file and removes hosts from the SSH config.
+"""
+
 import argparse
 import json
 import os
