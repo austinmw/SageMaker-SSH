@@ -1,16 +1,10 @@
-import yaml
 import getpass
- 
-from aws_cdk import (
-    Aws,
-    Stack,
-    CfnOutput,
-    aws_iam as iam,
-    aws_sagemaker as sagemaker,
-    Fn
-)
-from constructs import Construct
 
+import yaml
+from aws_cdk import Aws, CfnOutput, Fn, Stack
+from aws_cdk import aws_iam as iam
+from aws_cdk import aws_sagemaker as sagemaker
+from constructs import Construct
 
 # Get configs
 account_id = Aws.ACCOUNT_ID

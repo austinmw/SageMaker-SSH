@@ -10,7 +10,6 @@ from aws_cdk import aws_sagemaker as sagemaker
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
-
 # Get configs
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.SafeLoader)

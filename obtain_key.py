@@ -5,12 +5,11 @@ import os
 import subprocess
 
 import boto3
+import paramiko
 import yaml
 from botocore.exceptions import ClientError
-import paramiko
 
 from ssh_utils import SSHConfig, private_to_public_key
-
 
 parser = argparse.ArgumentParser(description='Retrieve or remove a parameter from SSM Parameter Store')
 parser.add_argument('action', choices=['get', 'remove'], help='Action to perform: "get" to retrieve the parameter or "remove" to delete the key file')
