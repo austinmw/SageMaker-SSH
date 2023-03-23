@@ -31,7 +31,7 @@ def private_to_public_key(private_key_path):
         format=serialization.PublicFormat.OpenSSH,
     )
 
-    # Print the public key string
+    # Add comment to public key and return
     public_key_str = public_key_bytes.decode("utf-8") + " bastion-ssh-key"
     return public_key_str
 
@@ -136,22 +136,21 @@ if '__main__' == __name__:
 
     # Add a new bastion host
     new_host_bastion = {
-        'Hostname': '54.147.242.140',
+        'Hostname': '<Public IP of your bastion host>',
         'User': 'ec2-user',
         'ForwardAgent': 'yes',
-        'IdentityFile': '/Users/austinmw/Desktop/ssh-key.pem',
+        'IdentityFile': '/Users/<username>/.ssh/bastion-ssh-key.pem',
         'ForwardX11': 'yes',
     }
 
     # Add a new notebook host
     new_host_notebook = {
-        'Hostname': '10.0.2.213',
+        'Hostname': '<Private IP of your notebook instance>',
         'User': 'ec2-user',
         'UserKnownHostsFile': '/dev/null',
         'StrictHostKeyChecking': 'no',
         'ProxyCommand': 'ssh -W %h:%p ec2-user@bastion',
-        'IdentityFile': '/Users/austinmw/Desktop/ssh-key.pem',
-        'LocalForward': '8501 localhost:8501', # Streamlit
+        'IdentityFile': '/Users/<username>/.ssh/bastion-ssh-key.pem',
         'LocalForward': '6006 localhost:6006', # Tensorboard
         'ForwardX11': 'yes',
     }
