@@ -12,6 +12,9 @@ Also note that an `~/.ssh/config` file should exist on your system. The deploy a
 
 Note that this app has only been tested on MacOS.
 
+### Create a virtual environment
+`python -m venv .venv`
+
 ### Bootstrap the CDK
 `make bootstrap`
 
