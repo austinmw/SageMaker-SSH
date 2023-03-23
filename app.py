@@ -1,5 +1,3 @@
-import getpass
-import json
 import os
 
 import aws_cdk as cdk
@@ -15,9 +13,9 @@ with open("config.yaml") as file:
 region = config["region"]
 
 env = cdk.Environment(
-        account=os.environ["CDK_DEFAULT_ACCOUNT"],
-        region=os.environ["CDK_DEFAULT_REGION"] if region == "default" else region
-    )
+    account=os.environ["CDK_DEFAULT_ACCOUNT"],
+    region=os.environ["CDK_DEFAULT_REGION"] if region == "default" else region,
+)
 
 app = cdk.App()
 

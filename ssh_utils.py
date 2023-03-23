@@ -1,5 +1,4 @@
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from cryptography.hazmat.primitives import serialization
 
 
 def private_to_public_key(private_key_path):
@@ -66,7 +65,7 @@ class SSHConfig:
     def _read_config(self):
         """Reads the SSH config file and returns a dictionary."""
         config = {}
-        with open(self.filename, "r") as f:
+        with open(self.filename) as f:
             lines = f.readlines()
             i = 0
             while i < len(lines):
@@ -77,7 +76,7 @@ class SSHConfig:
                     while i < len(lines) and not lines[i].startswith("Host"):
                         line = lines[i].strip()
                         if line:
-                            # Check that line has at least 2 words before trying to split it
+                            # Check line has at least 2 words before split
                             if len(line.split()) >= 2:
                                 key, value = line.split(maxsplit=1)
                                 config[host][key] = value
@@ -99,7 +98,7 @@ class SSHConfig:
         """Adds a new host to the config file."""
         if host in self.config:
             print(f"Host {host} already exists in config.")
-            #raise ValueError(f"Host {host} already exists in config.")
+            # raise ValueError(f"Host {host} already exists in config.")
         self.config[host] = kwargs
         self._write_config()
 
@@ -107,13 +106,13 @@ class SSHConfig:
         """Deletes a host from the config file."""
         if host not in self.config:
             print(f"Host {host} not found in config.")
-            #raise ValueError(f"Host {host} not found in config.")
+            # raise ValueError(f"Host {host} not found in config.")
         del self.config[host]
         self._write_config()
 
     def print_config(self):
         """Prints the entire ssh config file."""
-        with open(self.filename, "r") as f:
+        with open(self.filename) as f:
             print(f.read())
 
     def lookup_host(self, host):
@@ -130,29 +129,29 @@ class SSHConfig:
             print(f"    {key} {value}")
 
 
-if '__main__' == __name__:
+if "__main__" == __name__:
     # Set the path to your ssh config file
-    ssh_config_file = '/home/your-username/.ssh/config'
+    ssh_config_file = "/home/your-username/.ssh/config"
 
     # Add a new bastion host
     new_host_bastion = {
-        'Hostname': '<Public IP of your bastion host>',
-        'User': 'ec2-user',
-        'ForwardAgent': 'yes',
-        'IdentityFile': '/Users/<username>/.ssh/bastion-ssh-key.pem',
-        'ForwardX11': 'yes',
+        "Hostname": "<Public IP of your bastion host>",
+        "User": "ec2-user",
+        "ForwardAgent": "yes",
+        "IdentityFile": "/Users/<username>/.ssh/bastion-ssh-key.pem",
+        "ForwardX11": "yes",
     }
 
     # Add a new notebook host
     new_host_notebook = {
-        'Hostname': '<Private IP of your notebook instance>',
-        'User': 'ec2-user',
-        'UserKnownHostsFile': '/dev/null',
-        'StrictHostKeyChecking': 'no',
-        'ProxyCommand': 'ssh -W %h:%p ec2-user@bastion',
-        'IdentityFile': '/Users/<username>/.ssh/bastion-ssh-key.pem',
-        'LocalForward': '6006 localhost:6006', # Tensorboard
-        'ForwardX11': 'yes',
+        "Hostname": "<Private IP of your notebook instance>",
+        "User": "ec2-user",
+        "UserKnownHostsFile": "/dev/null",
+        "StrictHostKeyChecking": "no",
+        "ProxyCommand": "ssh -W %h:%p ec2-user@bastion",
+        "IdentityFile": "/Users/<username>/.ssh/bastion-ssh-key.pem",
+        "LocalForward": "6006 localhost:6006",  # Tensorboard
+        "ForwardX11": "yes",
     }
 
     # # Create an instance of the SSHConfig class
@@ -173,4 +172,3 @@ if '__main__' == __name__:
 
     # # Print the entire config
     # config.print_config()
-
