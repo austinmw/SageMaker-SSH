@@ -11,6 +11,7 @@ import paramiko
 
 from ssh_utils import SSHConfig, private_to_public_key
 
+
 parser = argparse.ArgumentParser(description='Retrieve or remove a parameter from SSM Parameter Store')
 parser.add_argument('action', choices=['get', 'remove'], help='Action to perform: "get" to retrieve the parameter or "remove" to delete the key file')
 args = parser.parse_args()
@@ -43,9 +44,6 @@ if args.action == 'get':
             WithDecryption=True,
         )
         param_value = response['Parameter']['Value']
-
-        # Print the parameter value
-        #print(f'The value of parameter {key_parameter_name} is:\n{param_value}')
 
         # Write the key to a file and set permissions
         with open(key_filename, 'w') as f:
@@ -98,12 +96,6 @@ if args.action == 'get':
         # Print the new hosts
         config.print_host("ec2-bastion")
         config.print_host("sagemaker-notebook")
-
-        # Output the connection command
-        #public_ip_str = bastion_ip.replace(".", "-")
-        #connect_str = f"ssh -i '~/.ssh/{key_name}.pem' ec2-user@ec2-{public_ip_str}.compute-1.amazonaws.com"
-        connect_str = f"ssh ec2-bastion"
-        print(f"\033[36m{connect_str}\033[0m")
 
         # Get the public key
         public_key_str = private_to_public_key(key_filepath)
