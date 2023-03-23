@@ -1,6 +1,4 @@
 """
-Retrieve or remove a parameter from SSM Parameter Store.
-
 This script retrieves a key pair parameter from AWS SSM
 Parameter Store, and sets up an SSH config to connect to a SageMaker
 Notebook instance through an EC2 bastion host.
