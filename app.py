@@ -1,28 +1,39 @@
-#!/usr/bin/env python3
+import getpass
+import json
 import os
 
 import aws_cdk as cdk
+import yaml
 
-from simpleapp.simpleapp_stack import SimpleappStack
+from stacks.bastion_stack import BastionStack
+from stacks.key_stack import KeyStack
+from stacks.sagemaker_stack import SageMakerStack
 
+# Get configs
+with open("config.yaml") as file:
+    config = yaml.load(file, Loader=yaml.SafeLoader)
+region = config["region"]
+
+env = cdk.Environment(
+        account=os.environ["CDK_DEFAULT_ACCOUNT"],
+        region=os.environ["CDK_DEFAULT_REGION"] if region == "default" else region
+    )
 
 app = cdk.App()
-SimpleappStack(app, "SimpleappStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+# Generate a new SSH key pair using Paramiko
+key = KeyStack(app, "KeyStack", env=env)
 
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+# Create a new EC2 instance using the key pair
+bastion = BastionStack(app, "BastionStack", env=env)
+bastion.add_dependency(key)
 
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
+notebook = SageMakerStack(app, "SageMakerStack", env=env)
+notebook.add_dependency(bastion)
 
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+# Add tags to stacks
+for stack in [key, bastion, notebook]:
+    cdk.Tags.of(stack).add("Creator", "CDK")
+    cdk.Tags.of(stack).add("Description", "Dev stack")
 
 app.synth()

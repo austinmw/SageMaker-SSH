@@ -1,58 +1,50 @@
+# Connect Your Local VS Code IDE to a SageMaker Notebook Instance
 
-# Welcome to your CDK Python project!
+**This CDK app allows you to connect a local VS Code IDE to a SageMaker Notebook Instance.**
 
-This is a blank project for CDK development with Python.
+It does this by creating a VPC and placing both the SageMaker notebook instance as well as a small EC2 instance inside it. The EC2 instance acts as a bastion, providing access to the SageMaker instance through the externally accessible EC2 instance.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Getting Started
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+Open a terminal, and first make sure that you've previously ran `aws configure` so that your shell has proper access to your AWS account. You can test this access by running `aws s3 ls`.
 
-To manually create a virtualenv on MacOS and Linux:
+Also note that an `~/.ssh/config` file should exist on your system. The deploy and tear down steps will modify this file to add/remove hosts.
 
-```
-$ python3 -m venv .venv
-```
+Note that this app has only been tested on MacOS.
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+### Bootstrap the CDK
+`make bootstrap`
 
-```
-$ source .venv/bin/activate
-```
+### Configure the app
+Edit the `config.yaml` file as necessary. The default settings are:
+```yaml
+region: default
 
-If you are a Windows platform, you would activate the virtualenv like this:
+ec2:
+  instance_type: t2.micro
 
-```
-% .venv\Scripts\activate.bat
-```
+notebook:
+  name: accessible-notebook
+  append_username: true
+  instance_type: ml.c5.xlarge
+  volume_size: 30
 
-Once the virtualenv is activated, you can install the required dependencies.
+lifecycle:
+  name: bastion-lifecycle-config
 
-```
-$ pip install -r requirements.txt
-```
-
-At this point you can now synthesize the CloudFormation template for this code.
-
-```
-$ cdk synth
+ssh:
+  key_name: bastion-ssh-key
 ```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+### Deployment
+`make`
 
-## Useful commands
+After this runs, follow the steps printed in your console, which include opening the SageMaker notebook instance, and pasting the public key. This will allow SSH access to your notebook via `ssh sagemaker-notebook`, as well as VS Code access via the Remote Explorer tab.
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+### Tear down
+`make clean`
 
-Enjoy!
+
+## Acknowledgements
+
+Thanks to the following blog post for inspiration and the SageMaker lifecycle script: https://modelpredict.com/sagemaker-ssh-setup/

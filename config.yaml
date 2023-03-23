@@ -1,0 +1,16 @@
+region: default
+
+ec2:
+  instance_type: t2.micro
+
+notebook:
+  name: accessible-notebook
+  append_username: true
+  instance_type: ml.c5.xlarge
+  volume_size: 30
+
+lifecycle:
+  name: bastion-lifecycle-config
+
+ssh:
+  key_name: bastion-ssh-key
