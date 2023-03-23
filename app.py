@@ -1,3 +1,9 @@
+"""
+This script deploys a multi-stack AWS infrastructure using the AWS CDK.
+It creates a KeyStack for an SSH key pair, a BastionStack for an EC2
+instance, and a SageMakerStack for a SageMaker NoteBook Instance
+that is accessible via SSH.
+"""
 import os
 
 import aws_cdk as cdk
