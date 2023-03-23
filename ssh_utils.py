@@ -155,22 +155,22 @@ if '__main__' == __name__:
         'ForwardX11': 'yes',
     }
 
-    # Create an instance of the SSHConfig class
-    config = SSHConfig(ssh_config_file)
+    # # Create an instance of the SSHConfig class
+    # config = SSHConfig(ssh_config_file)
 
-    #config.add_host("bastion", **new_host_bastion)
-    #config.add_host("vscode", **new_host_notebook)
+    # config.add_host("ec2-bastion", **new_host_bastion)
+    # config.add_host("sagemaker-notebook", **new_host_notebook)
 
     # # Lookup a specific host's configuration
-    # host = config.lookup_host("bastion")
+    # host = config.lookup_host("ec2-bastion")
     # print(host)
 
     # # Print a specific host's configuration
-    # config.print_host("bastion")
+    # config.print_host("ec2-bastion")
 
-    #config.delete_host("bastion")
-    #config.delete_host("vscode")
+    # config.delete_host("ec2-bastion")
+    # config.delete_host("sagemaker-notebook")
 
-    # Print the entire config
-    config.print_config()
+    # # Print the entire config
+    # config.print_config()
 
