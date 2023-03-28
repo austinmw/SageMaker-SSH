@@ -82,21 +82,23 @@ if args.action == "get":
         public_key_str = private_to_public_key(key_filepath)
 
         # Create a Boto3 EC2 client
-        ec2 = boto3.client("ec2")
+        ec2 = boto3.client("ec2", region_name=region)
 
         # Get the NetworkInterfaceId from the SageMaker notebook instance
-        sagemaker = boto3.client("sagemaker")
+        sagemaker = boto3.client("sagemaker", region_name=region)
 
         # Get the NetworkInterfaceId from the SageMaker notebook instance
         network_interface_id = sagemaker.describe_notebook_instance(
             NotebookInstanceName=notebook_instance_name
         )["NetworkInterfaceId"]
 
+
         # Describe the network interface and get its PrivateIpAddress
         response = ec2.describe_network_interfaces(
             NetworkInterfaceIds=[network_interface_id]
         )
         sagemaker_ip = response["NetworkInterfaces"][0]["PrivateIpAddress"]
+
 
         # Add a new bastion host
         new_host_bastion = {
