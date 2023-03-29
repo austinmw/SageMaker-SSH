@@ -148,12 +148,12 @@ if args.action == "get":
         )
         print(
             f"Step 4. Connect to the notebook instance:\n"
-            f"ssh sagemaker-notebook{reset}\n"
+            f"ssh sagemaker-notebook\n"
         )
         print(
             "Step 5: Open VS Code, go to the Remote Explorer tab, "
             "click the plus sign next to SSH, and enter the following:\n"
-            "sagemaker-notebook\n"
+            f"sagemaker-notebook{reset}\n"
         )
 
     except ClientError as e:
