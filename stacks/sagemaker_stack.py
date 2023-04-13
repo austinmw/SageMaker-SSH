@@ -59,6 +59,9 @@ class SageMakerStack(Stack):
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "AmazonSSMReadOnlyAccess"
                 ),
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonEC2ContainerRegistryFullAccess"
+                ),
             ],
         )
         # Print the RoleARN
