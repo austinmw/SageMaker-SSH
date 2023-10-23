@@ -99,7 +99,9 @@ class BastionStack(Stack):
             self,
             "MyEc2Instance",
             instance_type=ec2.InstanceType(instance_type),
-            machine_image=ec2.MachineImage.latest_amazon_linux(),
+            machine_image=ec2.MachineImage.latest_amazon_linux(
+                generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
+            ),
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
             security_group=sg1,
