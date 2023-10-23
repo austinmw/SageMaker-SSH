@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 import subprocess
+import yaml
 
 import boto3
 from botocore.exceptions import ClientError
@@ -34,6 +35,7 @@ from ssh_utils import SSHConfig, private_to_public_key
 parser = argparse.ArgumentParser(
     description="Retrieve or remove a parameter from SSM Parameter Store"
 )
+
 parser.add_argument(
     "action",
     choices=["get", "remove"],
@@ -42,17 +44,27 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+# Get configs
+with open("config.yaml") as file:
+    config = yaml.load(file, Loader=yaml.SafeLoader)
+config_suffix = config["ssh"]["config_suffix"]
+suffix = config["notebook"]["name"]
+
 # Get outputs
 with open("outputs.json") as file:
     outputs = json.load(file)
-region = outputs["KeyStack"]["Region"]
-key_name = outputs["KeyStack"]["MyKeyPairName"]
-key_parameter_name = outputs["KeyStack"]["MyKeyPairParameterName"]
+region = outputs[f"KeyStack-{suffix}"]["Region"]
+key_name = outputs[f"KeyStack-{suffix}"]["MyKeyPairName"]
+key_parameter_name = outputs[f"KeyStack-{suffix}"]["MyKeyPairParameterName"]
 key_filename = key_name + ".pem"
 key_filepath = os.path.expanduser(os.path.join("~", ".ssh", key_filename))
-bastion_ip = outputs["BastionStack"]["PublicIP"]
-notebook_instance_name = outputs["SageMakerStack"]["SageMakerNotebookName"]
-notebook_url = outputs["SageMakerStack"]["SageMakerNotebookURL"]
+bastion_ip = outputs[f"BastionStack-{suffix}"]["PublicIP"]
+notebook_instance_name = outputs[f"SageMakerStack-{suffix}"]["SageMakerNotebookName"]
+notebook_url = outputs[f"SageMakerStack-{suffix}"]["SageMakerNotebookURL"]
+
+# Define host names with account name
+bastion_host_name = "ec2-bastion-" + config_suffix
+notebook_host_name = "sagemaker-notebook-" + config_suffix
 
 # Create a Boto3 client for the SSM service
 ssm = boto3.client("ssm", region_name=region)
@@ -115,19 +127,19 @@ if args.action == "get":
             "User": "ec2-user",
             "UserKnownHostsFile": "/dev/null",
             "StrictHostKeyChecking": "no",
-            "ProxyCommand": "ssh -W %h:%p ec2-user@ec2-bastion",
+            "ProxyCommand": f"ssh -W %h:%p ec2-user@{bastion_host_name}",
             "IdentityFile": key_filepath,
             "LocalForward": "6006 localhost:6006",  # Tensorboard
             "ForwardX11": "yes",
         }
 
         # Add the hosts to the SSH config
-        config.add_host("ec2-bastion", **new_host_bastion)
-        config.add_host("sagemaker-notebook", **new_host_notebook)
+        config.add_host(bastion_host_name, **new_host_bastion)
+        config.add_host(notebook_host_name, **new_host_notebook)
 
         # Print the new hosts
-        config.print_host("ec2-bastion")
-        config.print_host("sagemaker-notebook")
+        config.print_host(bastion_host_name)
+        config.print_host(notebook_host_name)
 
         # Get the public key
         public_key_str = private_to_public_key(key_filepath)
@@ -148,12 +160,12 @@ if args.action == "get":
         )
         print(
             f"Step 4. Connect to the notebook instance:\n"
-            f"ssh sagemaker-notebook\n"
+            f"ssh {notebook_host_name}\n"
         )
         print(
             "Step 5: Open VS Code, go to the Remote Explorer tab, "
             "click the plus sign next to SSH, and enter the following:\n"
-            f"sagemaker-notebook{reset}\n"
+            f"{notebook_host_name}{reset}\n"
         )
 
     except ClientError as e:
@@ -168,11 +180,12 @@ elif args.action == "remove":
         os.remove(key_filepath)
         print(f"Removed key file: {key_filepath}")
         # Remove the hosts from the SSH config
-        config.delete_host("ec2-bastion")
-        config.delete_host("sagemaker-notebook")
+        config.delete_host(bastion_host_name)
+        config.delete_host(notebook_host_name)
         print("Removed hosts from SSH config")
 
     except OSError as e:
         print(f"Error running remove: {e}")
 else:
     print(f"Invalid action: {args.action}")
+    

@@ -17,6 +17,7 @@ from stacks.sagemaker_stack import SageMakerStack
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.SafeLoader)
 region = config["region"]
+suffix = config["notebook"]["name"]
 
 env = cdk.Environment(
     account=os.environ["CDK_DEFAULT_ACCOUNT"],
@@ -26,13 +27,13 @@ env = cdk.Environment(
 app = cdk.App()
 
 # Generate a new SSH key pair using Paramiko
-key = KeyStack(app, "KeyStack", env=env)
+key = KeyStack(app, f"KeyStack-{suffix}", env=env)
 
 # Create a new EC2 instance using the key pair
-bastion = BastionStack(app, "BastionStack", env=env)
+bastion = BastionStack(app, f"BastionStack-{suffix}", env=env)
 bastion.add_dependency(key)
 
-notebook = SageMakerStack(app, "SageMakerStack", env=env)
+notebook = SageMakerStack(app, f"SageMakerStack-{suffix}", env=env)
 notebook.add_dependency(bastion)
 
 # Add tags to stacks
