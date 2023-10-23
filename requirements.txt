@@ -1,5 +1,5 @@
-aws-cdk-lib==2.67.0
-boto3>=1.26.95
-constructs>=10.0.0,<11.0.0
-cryptography==39.0.2
+aws-cdk-lib==2.102.0
+boto3>=1.28.69
+constructs>=10.3.0,<11.0.0
+cryptography==41.0.4
 PyYAML==6.0
